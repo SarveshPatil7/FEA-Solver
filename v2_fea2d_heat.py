@@ -7,9 +7,9 @@ Created on Mon Apr 28 12:03:01 2025
 
 import numpy as np
 import pandas as pd
+
 #DO NOT MODIFY THIS FUNCTION
 def parse_abaqus_input(file_path, print_mesh_data=False):
-
     '''
     Read an Abaqus input file for 
     1. a 2D static linear elasticity problem
@@ -737,6 +737,7 @@ def Assemble_Tp(N_PRE_T, T_NODE, T_VAL, EQ_NUM):
 
     return Tp
 
+# conduction contribution for individual element
 def Kke(k, L1, L2):
         
     K1 = ((k * L2) / (6 * L1)) * np.array([[ 2, -2, -1,  1],
@@ -753,6 +754,7 @@ def Kke(k, L1, L2):
     
     return Ke
 
+#
 def assemble_PQ(N_ELEM, ELEM_NODE, COORDS, ELEM_PROPS, ELEM_BLOAD, LM, N_TOTAL_DOF):
 
     P = np.zeros(N_TOTAL_DOF)
@@ -786,6 +788,7 @@ def assemble_PQ(N_ELEM, ELEM_NODE, COORDS, ELEM_PROPS, ELEM_BLOAD, LM, N_TOTAL_D
 
     return P
 
+#
 def assemble_Pq(N_FLUX_q, FLUX_q_ELE, FLUX_q_VAL, ELEM_NODE, COORDS, LM, N_TOTAL_DOF):
 
     P = np.zeros(N_TOTAL_DOF)
@@ -821,6 +824,7 @@ def assemble_Pq(N_FLUX_q, FLUX_q_ELE, FLUX_q_VAL, ELEM_NODE, COORDS, LM, N_TOTAL
 
     return P
 
+# convection contribution for individual element
 def Kce(h, L_edge):
 
     Ke_edge = (h * L_edge / 6.0) * np.array([[2.0, 1.0],
@@ -828,6 +832,7 @@ def Kce(h, L_edge):
 
     return Ke_edge
 
+# assemble the global stiffness matrix
 def assemble_K(N_ELEM, ELEM_NODE, COORDS, ELEM_PROPS, FLUX_c_ELE, FLUX_c_VAL, N_TOTAL_DOF):
     
     face_nodes = {1: (0, 1),
@@ -862,6 +867,7 @@ def assemble_K(N_ELEM, ELEM_NODE, COORDS, ELEM_PROPS, FLUX_c_ELE, FLUX_c_VAL, N_
     
     return K
     
+# convection boundary condition
 def assemble_Pc(N_FLUX_c, FLUX_c_ELE, FLUX_c_VAL, ELEM_NODE, COORDS, LM, N_TOTAL_DOF, ELEM_PROPS):
 
     P_conv = np.zeros(N_TOTAL_DOF)
@@ -890,6 +896,7 @@ def assemble_Pc(N_FLUX_c, FLUX_c_ELE, FLUX_c_VAL, ELEM_NODE, COORDS, LM, N_TOTAL
     #print('P_conv = ', P_conv)
     return P_conv
 
+# partition the global matrices
 def assemble_partition(K, PQ, Pq, Pc, T_NODE, T_VAL, N_TOTAL_DOF, EQ_NUM, N_NODE):
 
     Kur = K
@@ -918,6 +925,7 @@ def assemble_partition(K, PQ, Pq, Pc, T_NODE, T_VAL, N_TOTAL_DOF, EQ_NUM, N_NODE
 
     return KPP, KPF, KFP, KFF, PP, PF, UP, UF, free, prescribed
 
+# solve the partitioned matrices
 def solve_and_assemble(KFF, KFP, PF, UP, free, prescribed, N_TOTAL_DOF):
 
     #print("KFF:")
@@ -933,8 +941,9 @@ def solve_and_assemble(KFF, KFP, PF, UP, free, prescribed, N_TOTAL_DOF):
     
     return TUR
 
-# Final solver function used in main.py
-def solve_steady(N_NODE, N_ELEM, NNODE_ELE, ShapeOrder, Ng, N_PRE_T, N_FLUX_q, N_FLUX_c,COORDS, ELEM_NODE, ELEM_PROPS, ELEM_BLOAD, T_NODE, T_VAL,FLUX_q_ELE, FLUX_q_VAL,FLUX_c_ELE, FLUX_c_VAL):
+# final steady state solver function used in main.py
+def solve_steady(N_NODE, N_ELEM, NNODE_ELE, ShapeOrder, Ng, N_PRE_T, N_FLUX_q, N_FLUX_c,COORDS, ELEM_NODE, 
+                 ELEM_PROPS, ELEM_BLOAD, T_NODE, T_VAL,FLUX_q_ELE, FLUX_q_VAL,FLUX_c_ELE, FLUX_c_VAL):
 
     EQ_NUM, LM, N_DOF, N_TOTAL_DOF = EQ_NUM_LM(N_NODE, N_ELEM, ELEM_NODE, T_NODE, N_PRE_T)
 
@@ -952,7 +961,7 @@ def solve_steady(N_NODE, N_ELEM, NNODE_ELE, ShapeOrder, Ng, N_PRE_T, N_FLUX_q, N
     return TUR, EQ_NUM, LM, K, KPP, KPF, KFP, KFF, PP, PF, UP, UF
 
     
-# Transient
+# final transient solver function used in main.py
 def capacitance(N_ELEM, ELEM_NODE, COORDS, ELEM_PROPS, N_TOTAL_DOF):
 
     from math import sqrt
@@ -985,6 +994,7 @@ def capacitance(N_ELEM, ELEM_NODE, COORDS, ELEM_PROPS, N_TOTAL_DOF):
     #print('C_lump = ', C_lump)
     return C_lump
 
+# calculate the critical time step
 def crit_step(K, C_lump):
 
     CiK = np.linalg.inv(C_lump) @ K
@@ -992,9 +1002,9 @@ def crit_step(K, C_lump):
     λmax = np.max(eigs.real)
     return 2.0 / λmax
     
-def general_theta_solver(N_NODE, N_ELEM, ELEM_NODE, COORDS, ELEM_PROPS, 
-                         T_NODE, T_VAL, FLUX_c_ELE, FLUX_c_VAL, N_FLUX_c,
-                         N_FLUX_q, FLUX_q_ELE, FLUX_q_VAL, N_PRE_T, factor):
+# adjust the theta values to change the integrator scheme
+def general_theta_solver(N_NODE, N_ELEM, ELEM_NODE, COORDS, ELEM_PROPS, T_NODE, T_VAL, FLUX_c_ELE, 
+                         FLUX_c_VAL, N_FLUX_c, N_FLUX_q, FLUX_q_ELE, FLUX_q_VAL, N_PRE_T, factor):
     
     EQ_NUM, LM,_,_ = EQ_NUM_LM(N_NODE, N_ELEM, ELEM_NODE, T_NODE, N_PRE_T)
     K = assemble_K(N_ELEM, ELEM_NODE, COORDS, ELEM_PROPS, FLUX_c_ELE, FLUX_c_VAL, N_NODE)
@@ -1011,7 +1021,6 @@ def general_theta_solver(N_NODE, N_ELEM, ELEM_NODE, COORDS, ELEM_PROPS,
     print('crit_t = ', crit_t)
     
     N = len(EQ_NUM)
-
     
     Kbar = theta * K + C_lump / dt
     

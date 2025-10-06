@@ -11,14 +11,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 #########################Usage example for reading thermal problem#########################
-#filename = r"X:\UIUC\Sem 4\ME 471 FEA\Homeworks\Project 3\in progress\thermal_inputs\fine_rectangle_hole.inp"
-filename = r"X:\UIUC\Sem 4\ME 471 FEA\Homeworks\Project 3\in progress\thermal_inputs\coarse_rectangle.inp"
+# enter the .inp file address in filename
+filename = r"X:\UIUC\Sem 4\ME 471 FEA\Homeworks\Project 3\in progress\thermal_inputs\fine_rectangle_hole.inp"
+
+# parsing the .inp file to assigned variables
 [N_NODE, N_ELEM, NNODE_ELE, ShapeOrder, Ng, N_PRE_T, 
 N_FLUX_q, N_FLUX_c,COORDS, ELEM_NODE, ELEM_PROPS, ELEM_BLOAD, 
 T_NODE, T_VAL,FLUX_q_ELE, FLUX_q_VAL,FLUX_c_ELE, FLUX_c_VAL] = v2_fea2d_heat.make_thermal_problem_data(filename)
 
 '''
-# Print all outputs
+# Print all parsed variabes for debugging
 print('N_NODE = ', N_NODE)
 print('N_ELEM = ', N_ELEM)
 print('NNODE_ELE = ', NNODE_ELE)
@@ -40,8 +42,7 @@ print('FLUX_c_VAL = \n', FLUX_c_VAL)
 '''
 ##########################End of reading thermal problem##################################
 
-#steady state
-
+# steady state
 TUR, EQ_NUM, LM, K, KPP, KPF, KFP, KFF, PP, PF, UP, UF = v2_fea2d_heat.solve_steady(N_NODE, N_ELEM, NNODE_ELE, ShapeOrder, Ng, N_PRE_T, N_FLUX_q, N_FLUX_c,COORDS, ELEM_NODE, ELEM_PROPS, ELEM_BLOAD, T_NODE, T_VAL,FLUX_q_ELE, FLUX_q_VAL,FLUX_c_ELE, FLUX_c_VAL)
 plot_Heat2D_results(TUR, N_ELEM, ELEM_NODE, COORDS, field='temperature', show_plot=True, filename='temperature_contour_example.png')
 
@@ -141,7 +142,8 @@ plt.tight_layout()
 plt.show()
 '''
 
-    #plot_Heat2D_results(T5, N_ELEM, ELEM_NODE, COORDS, field='temperature', show_plot=True, filename='temperature_contour_example.png')
+
+plot_Heat2D_results(T5, N_ELEM, ELEM_NODE, COORDS, field='temperature', show_plot=True, filename='temperature_contour_example.png')
 
 ##########################End of plotting temperature##################################
 
