@@ -1013,7 +1013,7 @@ def general_theta_solver(N_NODE, N_ELEM, ELEM_NODE, COORDS, ELEM_PROPS, T_NODE, 
     
     C_lump = capacitance(N_ELEM, ELEM_NODE, COORDS, ELEM_PROPS, N_NODE)  
     crit_t = crit_step(K, C_lump)
-    dt = crit_t * factor    #number adjusted according to question
+    dt = crit_t * factor    # number adjusted according to question
     #dt = 50                # use this step for crank nicoleson
     theta = 0               # 0 for forward euler,  0.5 for crank nicoleson
     sol_t = 5000
