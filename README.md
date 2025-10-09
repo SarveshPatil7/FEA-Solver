@@ -12,7 +12,7 @@ This is a hands on project for thermal FEA for 2D files. Only supports DC2D4 ele
 <table>
   <tr>
     <td align="center" valign="bottom">
-      <img src="Images/distort_abaq.png" width="400"><br>
+      <img src="Images/distort_abaq.png" width="450"><br>
       <b>Results from Abaqus</b>
     </td>
     <td align="center">
