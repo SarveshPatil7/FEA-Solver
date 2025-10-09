@@ -16,7 +16,7 @@ This is a hands on project for thermal FEA for 2D files. Only supports DC2D4 ele
       <b>Results from Abaqus</b>
     </td>
     <td align="center">
-      <img src="Images/distort_py.png" width="380"><br>
+      <img src="Images/distort_py.png" width="370"><br>
       <b>Results from the custom solver in Python</b>
     </td>
   </tr>
