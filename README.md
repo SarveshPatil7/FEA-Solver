@@ -11,7 +11,7 @@ This is a hands on project for thermal FEA for 2D files. Only supports DC2D4 ele
 ### Testing the performance with distorted elements
 <table>
   <tr>
-    <td align="bottom-center">
+    <td align="center">
       <img src="Images/distort_abaq.png" width="380"><br>
       <b>Results from Abaqus</b>
     </td>
