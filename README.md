@@ -11,7 +11,7 @@ This is a hands on project for thermal FEA for 2D files. Only supports DC2D4 ele
 ### Testing the performance with distorted elements
 <table>
   <tr>
-    <td align="center">
+    <td align="bottom-center">
       <img src="Images/distort_abaq.png" width="380"><br>
       <b>Results from Abaqus</b>
     </td>
@@ -21,6 +21,7 @@ This is a hands on project for thermal FEA for 2D files. Only supports DC2D4 ele
     </td>
   </tr>
 </table>
+
 
 ### Results from a higher element count simulation
 <table>
